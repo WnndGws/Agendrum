@@ -10,7 +10,7 @@ To run add the following to your sway config:
 
 ```bash{.line-numbers}
 # Run wallpaper script and set as background
-python path/to/wallpaperMaker/manipulate_image.py
+exec python path/to/wallpaperMaker/manipulate_image.py
 output * bg /tmp/wallpaper.png fill
 ```
 
