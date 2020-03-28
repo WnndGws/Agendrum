@@ -13,15 +13,7 @@ import pdb
 
 def manipulate_wallpaper():
 
-    pdb.set_trace()
-
-    quote_file = "./quotes.txt"
-    base_image = Image.open("/tmp/bing.jpg").convert("RGBA")
-
-    #set font
-    font = "/usr/share/fonts/TTF/Hack Regular Nerd Font Complete Mono.ttf"
-    font_size = 50
-    quote_font = ImageFont.truetype(font, font_size)
+    #pdb.set_trace()
 
     #get image
     download_wallpaper_image.download_bing_wallpaper()
@@ -29,13 +21,27 @@ def manipulate_wallpaper():
     #get agenda
     agenda = get_calendar_events.main()
 
+    quote_file = "./quotes.txt"
+    base_image = Image.open("/tmp/bing.jpg").convert("RGBA")
+
+    #set font
+    font = "/usr/share/fonts/TTF/Hack Regular Nerd Font Complete Mono.ttf"
+    font_size = 25
+    quote_font = ImageFont.truetype(font, font_size)
+
     # make a blank image for the text, initialized to transparent text color
     text_image = Image.new("RGBA", base_image.size, (255, 255, 255, 0))
+
+    # create a list where each entry is a line of text
     with open(quote_file) as f:
         quote_pool = f.read().splitlines()
     random_quote = random.choice(quote_pool)
-    quote_lines = textwrap.wrap(random_quote, width=60)
-    quote_lines = quote_lines + "/n" + agenda
+    quote_lines = textwrap.wrap(random_quote, width=55)
+    str1 = ''
+    for i in quote_lines:
+        str1 = str1 + i + "\n"
+    quote_lines = str1 + " \n" + agenda
+    quote_lines = quote_lines.split("\n")
 
     # get a drawing context
     draw = ImageDraw.Draw(text_image)

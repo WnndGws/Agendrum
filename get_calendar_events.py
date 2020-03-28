@@ -162,8 +162,8 @@ def main():
 
     maxLen = max(maxToday, maxTodayAllDay, maxTomorrow, maxTomorrowAllDay)
 
-    printTextToday = [datetime.datetime.strftime(datetime.date.today(), "%d/%m/%Y")]
-    printTextTomorrow = [datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(days=1), "%d/%m/%Y")]
+    printTextToday = [datetime.datetime.strftime(datetime.date.today(), "%A %d/%m/%Y")]
+    printTextTomorrow = [datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(days=1), "%A %d/%m/%Y")]
 
     for i in textListTodayAllDay:
         if i not in printTextToday:
@@ -183,7 +183,7 @@ def main():
         i  = i + (maxLen - len(i))*"."
         output = output + i + "\n"
 
-    output = output + "\n" + printTextTomorrow[0] + "\n"
+    output = output + " \n" + printTextTomorrow[0] + "\n"
     for i in printTextTomorrow[1:]:
         i  = i + (maxLen - len(i))*"."
         output = output + i + "\n"
