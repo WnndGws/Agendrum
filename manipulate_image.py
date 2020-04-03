@@ -4,6 +4,7 @@
 
 import download_wallpaper_image
 import get_calendar_events
+import os
 
 import random
 import textwrap
@@ -21,7 +22,8 @@ def manipulate_wallpaper():
     #get agenda
     agenda = get_calendar_events.main()
 
-    quote_file = "./quotes.txt"
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    quote_file = os.path.join(dir_path, "quotes.txt")
     base_image = Image.open("/tmp/bing.jpg").convert("RGBA")
 
     #set font
