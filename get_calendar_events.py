@@ -10,6 +10,9 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 import datetime
+from codetiming import Timer
+
+t = Timer(text="Elapsed time: {seconds:.3f} s")
 
 #try:
     #import argparse
@@ -55,9 +58,11 @@ def get_events():
     Creates a Google Calendar API service object and outputs a list of the next
     10 events on the user's calendar.
     """
+    #t.start()
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build("calendar", "v3", http=http)
+    #t.stop()
 
     now = datetime.date.today().isoformat()
     now = now + "T00:00:00Z"
@@ -68,8 +73,11 @@ def get_events():
     allEvents = []
     page_token = None
     while True:
+        #t.start()
         calendar_list = service.calendarList().list(pageToken=page_token).execute()
+        #t.stop()
         for calendar_list_entry in calendar_list['items']:
+            #t.start()
             eventResult = (
                service.events()
                .list(
@@ -81,6 +89,7 @@ def get_events():
                )
                .execute()
             )
+            #t.stop()
             events = eventResult.get("items", [])
             if not events:
                 pass
