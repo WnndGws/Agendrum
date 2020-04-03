@@ -10,6 +10,9 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 import datetime
+from codetiming import Timer
+
+t = Timer(text="Elapsed time: {seconds:.3f} s")
 
 #try:
     #import argparse
@@ -21,7 +24,7 @@ flags = None
 SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
 home_dir = os.path.expanduser("~")
 CLIENT_SECRET_FILE = os.path.join(
-    home_dir, ".config/saved_credentials/wallpaper_client_secrets.json"
+    home_dir, ".config/credentials/wallpaper_client_secrets.json"
 )
 APPLICATION_NAME = "Wallpaper_maker"
 
@@ -36,7 +39,7 @@ def get_credentials():
         Credentials, the obtained credential.
     """
     home_dir = os.path.expanduser("~")
-    credential_dir = os.path.join(home_dir, ".config/saved_credentials")
+    credential_dir = os.path.join(home_dir, ".config/credentials")
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir, "wallpaper_maker_credentials.json")
@@ -46,10 +49,7 @@ def get_credentials():
     if not credentials or credentials.invalid:
         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
         flow.user_agent = APPLICATION_NAME
-        if flags:
-            credentials = tools.run_flow(flow, store, flags)
-        else:  # Needed only for compatibility with Python 2.6
-            credentials = tools.run(flow, store)
+        credentials = tools.run_flow(flow, store, flags)
         print("Storing credentials to " + credential_path)
     return credentials
 
@@ -58,9 +58,11 @@ def get_events():
     Creates a Google Calendar API service object and outputs a list of the next
     10 events on the user's calendar.
     """
+    #t.start()
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build("calendar", "v3", http=http)
+    #t.stop()
 
     now = datetime.date.today().isoformat()
     now = now + "T00:00:00Z"
@@ -71,8 +73,11 @@ def get_events():
     allEvents = []
     page_token = None
     while True:
+        #t.start()
         calendar_list = service.calendarList().list(pageToken=page_token).execute()
+        #t.stop()
         for calendar_list_entry in calendar_list['items']:
+            #t.start()
             eventResult = (
                service.events()
                .list(
@@ -84,6 +89,7 @@ def get_events():
                )
                .execute()
             )
+            #t.stop()
             events = eventResult.get("items", [])
             if not events:
                 pass
