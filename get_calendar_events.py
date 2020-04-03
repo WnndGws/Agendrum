@@ -21,7 +21,7 @@ flags = None
 SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
 home_dir = os.path.expanduser("~")
 CLIENT_SECRET_FILE = os.path.join(
-    home_dir, ".config/saved_credentials/wallpaper_client_secrets.json"
+    home_dir, ".config/credentials/wallpaper_client_secrets.json"
 )
 APPLICATION_NAME = "Wallpaper_maker"
 
@@ -36,7 +36,7 @@ def get_credentials():
         Credentials, the obtained credential.
     """
     home_dir = os.path.expanduser("~")
-    credential_dir = os.path.join(home_dir, ".config/saved_credentials")
+    credential_dir = os.path.join(home_dir, ".config/credentials")
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir, "wallpaper_maker_credentials.json")
