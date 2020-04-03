@@ -5,22 +5,30 @@
 import download_wallpaper_image
 import get_calendar_events
 
+from codetiming import Timer
 import random
 import textwrap
 from PIL import Image, ImageDraw, ImageFont, ImageStat
 
 import pdb
 
+t = Timer(text="Elapsed time: {seconds:.3f} s")
+
 def manipulate_wallpaper():
 
     #pdb.set_trace()
 
+    #t.start()
     #get image
     download_wallpaper_image.download_bing_wallpaper()
+    #t.stop()
 
+    #t.start()
     #get agenda
     agenda = get_calendar_events.main()
+    #t.stop()
 
+    #t.start()
     quote_file = "./quotes.txt"
     base_image = Image.open("/tmp/bing.jpg").convert("RGBA")
 
@@ -90,6 +98,7 @@ def manipulate_wallpaper():
     image_out = Image.alpha_composite(image_out, text_image)
 
     image_out.save("/tmp/wallpaper.png")
+    #t.stop()
 
 if __name__ == "__main__":
     manipulate_wallpaper()
