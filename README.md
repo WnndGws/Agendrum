@@ -4,21 +4,20 @@ Downloads Bing image of the day and overlays your calendar on it.
 Will overlay schedule and set that 'nice' image with an 'inspirational' quote as your wallpaper for the day
 
 ## Usage
-To manually run:
+### Run manually
 ```bash
-$ path/to/wallpaperMaker/manipulate_image.py
+$ path/to/wallpaperMaker/program.py
 ```
-Then set your wallpaper how you normally would
+* This requires either feh if using X, or running SwayWM
 
+### Run as part of configs
 To run add the following to your sway config:
 
 ```bash{.line-numbers}
 # Run wallpaper script and set as background
-exec python path/to/wallpaperMaker/manipulate_image.py && swaymsg 'output * bg /tmp/wallpaper.png fill'
+exec path/to/wallpaperMaker/program.py
 ```
 
-If you would like to run it manually to test, you can run
-```bash
-$ python path/to/wallpaperMaker/manipulate_image.py
-$ swaymsg 'output * bg /tmp/wallpaper.png fill'
-```
+## TODO
+[] Allow user input via config file
+[] Allow user input via commandline flags
