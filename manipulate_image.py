@@ -34,7 +34,7 @@ def manipulate_wallpaper():
     base_image = Image.open("/tmp/bing.jpg").convert("RGBA")
 
     #set font
-    font = "/usr/share/fonts/TTF/Hack Regular Nerd Font Complete Mono.ttf"
+    font = "/usr/share/fonts/TTF/Ubuntu Mono Nerd Font Complete Mono.ttf"
     font_size = 25
     quote_font = ImageFont.truetype(font, font_size)
 
@@ -87,7 +87,7 @@ def manipulate_wallpaper():
     y_loc = base_image.size[1] / 2 - (quote_size_y / 2)
     draw.rectangle(
         (
-            (x_loc - quote_size_x * 1.5),
+            (x_loc - quote_size_x * 1.1),
             y_loc - 10,
             x_loc - 10,
             y_loc + quote_size_y + 10,
