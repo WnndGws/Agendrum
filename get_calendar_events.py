@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-##Outputs my daily events from google calendar
+##Outputs daily events from google calendar
 
 import httplib2
 import os
