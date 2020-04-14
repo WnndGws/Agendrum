@@ -19,5 +19,5 @@ exec path/to/wallpaperMaker/program.py
 ```
 
 ## TODO
-[] Allow user input via config file
-[] Allow user input via commandline flags
+* [ ] Allow user input via config file
+* [ ] Allow user input via commandline flags
