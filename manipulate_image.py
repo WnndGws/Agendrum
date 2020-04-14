@@ -87,7 +87,7 @@ def manipulate_wallpaper():
     y_loc = base_image.size[1] / 2 - (quote_size_y / 2)
     draw.rectangle(
         (
-            (x_loc - quote_size_x * 1.1),
+            (x_loc - quote_size_x * 1.25),
             y_loc - 10,
             x_loc - 10,
             y_loc + quote_size_y + 10,
