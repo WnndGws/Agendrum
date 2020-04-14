@@ -6,7 +6,7 @@ Will overlay schedule and set that 'nice' image with an 'inspirational' quote as
 ## Usage
 To manually run:
 ```bash
-$ path/tp/wallpaperMaker/manipulate_image.py
+$ path/to/wallpaperMaker/manipulate_image.py
 ```
 Then set your wallpaper how you normally would
 
