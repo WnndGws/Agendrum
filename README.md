@@ -2,7 +2,7 @@
 Agendrum: a portmanteau of "Agendum" (Latin for “which ought to be 
 done”, referring to the agenda text), and "Murum" (Latin for "wall")
 
-Downloads Bing image of the day and overlays your calendar on it. Currently only supports Google Calendar since that is what I use. Outpus is /tmp/wallpaper.png by default, which the user can then set as their wallpaper how they normally do
+Downloads Bing image of the day and overlays your calendar on it. Currently only supports Google Calendar since that is what I use. Output is /tmp/wallpaper.png by default, which the user can then set as their wallpaper how they normally do
 
 Will overlay schedule and set that 'nice' image with an 'inspirational' quote as your wallpaper for the day
 
