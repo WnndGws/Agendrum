@@ -7,7 +7,7 @@ Downloads Bing image of the day and overlays your calendar on it. Currently only
 Will overlay schedule and set that 'nice' image with an 'inspirational' quote as your wallpaper for the day
 
 ## Example
-(example_wallpaper.png?raw=true "Example wallpaper")
+![](example_wallpaper.png?raw=true "Example wallpaper")
 
 ## Usage
 ### Run manually
