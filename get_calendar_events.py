@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-##Outputs daily events from google calendar
+'''Outputs daily events from google calendar
+'''
 
 import datetime
 import os
@@ -11,14 +12,21 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 
-flags = None
+FLAGS = None
 
 SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
-home_dir = os.path.expanduser("~")
-CLIENT_SECRET_FILE = os.path.join(
-    home_dir, ".cache/credentials/wallpaper_client_secrets.json"
-)
-APPLICATION_NAME = "Wallpaper_maker"
+if "XDG_CACHE_HOME" in os.environ:
+    BASE_DIR = os.path.expandvars('$XDG_CACHE_HOME')
+    XDG_DIR = os.path.join(BASE_DIR, "agendrum")
+    if not os.path.exists(XDG_DIR):
+        os.makedirs(XDG_DIR)
+    CLIENT_SECRET_FILE = os.path.join(XDG_DIR, "agendrum_secrets.json")
+    CREDENTIAL_FILE = os.path.join(XDG_DIR, "agendrum_credentials.json")
+else:
+    BASE_DIR = os.path.expanduser("~")
+    CLIENT_SECRET_FILE = os.path.join(BASE_DIR, ".agendrum_secrets")
+    CREDENTIAL_FILE = os.path.join(BASE_DIR, ".agendrum_credentials")
+APPLICATION_NAME = "Agendrum"
 
 
 def get_credentials():
@@ -30,19 +38,14 @@ def get_credentials():
     Returns:
         Credentials, the obtained credential.
     """
-    home_dir = os.path.expanduser("~")
-    credential_dir = os.path.join(home_dir, ".cache/credentials")
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir, "wallpaper_maker_credentials.json")
 
-    store = Storage(credential_path)
+    store = Storage(CREDENTIAL_FILE)
     credentials = store.get()
     if not credentials or credentials.invalid:
         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
         flow.user_agent = APPLICATION_NAME
-        credentials = tools.run_flow(flow, store, flags)
-        print("Storing credentials to " + credential_path)
+        credentials = tools.run_flow(flow, store, FLAGS)
+        print("Storing credentials to " + CREDENTIAL_FILE)
     return credentials
 
 def get_events():
