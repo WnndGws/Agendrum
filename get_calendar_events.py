@@ -15,8 +15,8 @@ from oauth2client.file import Storage
 FLAGS = None
 
 SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
-if "XDG_CACHE_HOME" in os.environ:
-    BASE_DIR = os.path.expandvars('$XDG_CACHE_HOME')
+if "XDG_CONFIG_HOME" in os.environ:
+    BASE_DIR = os.path.expandvars('$XDG_CONFIG_HOME')
     XDG_DIR = os.path.join(BASE_DIR, "agendrum")
     if not os.path.exists(XDG_DIR):
         os.makedirs(XDG_DIR)
