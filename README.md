@@ -32,6 +32,7 @@ exec_always --no-startup-id exec /path/to/Agendrum/agendrum.py && feh --bg-fill 
 ```
 
 ## TODO
+* [ ] Use oauth instead of a clients_secrets file
 * [ ] Allow user input via config file
 * [ ] Allow user input via commandline flags
 * [ ] Package file to be able to install from AUR or pip
