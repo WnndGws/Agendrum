@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python
 """Downloads that days bing background image
 """
 
