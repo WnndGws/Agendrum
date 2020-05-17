@@ -9,10 +9,17 @@ Will overlay schedule and set that 'nice' image with an 'inspirational' quote as
 ## Example
 ![](example_wallpaper.png?raw=true "Example wallpaper")
 
+## Installation
+* To run Agendrum you just need to clone the repo and run the ./agendrum.py file
+
+```bash
+git clone https://github.com/WnndGws/Agendrum.git
+```
+
 ## Usage
 ### Run manually
 ```bash
-$ path/to/Agendrum/agendrum.py
+$ path/to/Agendrum/agendrum.py --help
 ```
 * This will only create the image, which the user can then set as their wallpaper how they normally would
 

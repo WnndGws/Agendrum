@@ -5,16 +5,11 @@
 import json
 import requests
 
-def download_bing_wallpaper():
-
-    country = "en-AU"
-    resolution = "1920x1080"
-
-    """Downloads the daily wallpaper from bing as a jpg"""
+def download_bing_wallpaper(country, resolution):
+    """Downloads the daily wallpaper from bing as a png"""
     # idx determines where to start from. 0 is today, 1 is yesterday, etc.
     idx = "0"
     mkt = country
-    resolution = resolution
     url = f"https://www.bing.com/HPImageArchive.aspx?format=js&idx={idx}&n=1&mkt={mkt}"
 
     r = requests.get(url)
@@ -28,4 +23,4 @@ def download_bing_wallpaper():
                 f.write(r.content)
 
 if __name__ == "__main__":
-    download_bing_wallpaper()
+    download_bing_wallpaper("en-AU", "1920x1080")
