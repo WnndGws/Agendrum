@@ -11,20 +11,28 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 
-
+# Next set up the Google calendar scopes and files for the authentication flow
 FLAGS = None
-
 SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
+
 if "XDG_CONFIG_HOME" in os.environ:
     BASE_DIR = os.path.expandvars('$XDG_CONFIG_HOME')
     XDG_DIR = os.path.join(BASE_DIR, "agendrum")
     if not os.path.exists(XDG_DIR):
         os.makedirs(XDG_DIR)
     CLIENT_SECRET_FILE = os.path.join(XDG_DIR, "agendrum_secrets.json")
+    #Quit if file doesnt exist since Agendrum doesnt work without it
+    if not os.path.isfile(CLIENT_SECRET_FILE):
+        print(f'Please create "{CLIENT_SECRET_FILE}" and run Agendrum again. (see https://stackoverflow.com/a/55416898 for help on how to do this)')
+        quit()
     CREDENTIAL_FILE = os.path.join(XDG_DIR, "agendrum_credentials.json")
 else:
     BASE_DIR = os.path.expanduser("~")
     CLIENT_SECRET_FILE = os.path.join(BASE_DIR, ".agendrum_secrets")
+    #Quit if file doesnt exist since Agendrum doesnt work without it
+    if not os.path.isfile(CLIENT_SECRET_FILE):
+        print(f'Please create "{CLIENT_SECRET_FILE}" and run Agendrum again. (see https://stackoverflow.com/a/55416898 for help on how to do this)')
+        quit()
     CREDENTIAL_FILE = os.path.join(BASE_DIR, ".agendrum_credentials")
 APPLICATION_NAME = "Agendrum"
 
