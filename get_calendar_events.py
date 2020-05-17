@@ -28,7 +28,6 @@ else:
     CREDENTIAL_FILE = os.path.join(BASE_DIR, ".agendrum_credentials")
 APPLICATION_NAME = "Agendrum"
 
-
 def get_credentials():
     """Gets valid user credentials from storage.
 
