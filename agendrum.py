@@ -2,42 +2,59 @@
 """Adds quote box to image
 """
 
-#standard imports
+# standard imports
 import os
 import random
 import textwrap
 
-#3rd party imports
+# 3rd party imports
 import click
 from PIL import Image, ImageDraw, ImageFont, ImageStat
 
-#local imports
+# local imports
 import download_wallpaper_image
 import get_calendar_events
 
-#BING_LOCALES = ["cz-CZ", "da-DK", "de-AT", "de-CH", "de-DE", "en-AU", "en-CA", "en-GB", "en-NZ", "en-US", "en-ZA", "es-ES", "es-MX", "et-EE", "fi-FI", "fr-BE", "fr-CA", "fr-CH", "fr-FR", "hr-HR", "hu-HU", "is-IS", "it-CH", "it-IT", "jp-JP", "ko-KR", "lv-LV", "lt-LT", "no-NO", "nl-BE", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sk-SK", "sl-SI", "sr-latn-RS", "sv-SE", "tr-TR", "zh-HK", "zh-TW"]
+# BING_LOCALES = ["cz-CZ", "da-DK", "de-AT", "de-CH", "de-DE", "en-AU", "en-CA", "en-GB", "en-NZ", "en-US", "en-ZA", "es-ES", "es-MX", "et-EE", "fi-FI", "fr-BE", "fr-CA", "fr-CH", "fr-FR", "hr-HR", "hu-HU", "is-IS", "it-CH", "it-IT", "jp-JP", "ko-KR", "lv-LV", "lt-LT", "no-NO", "nl-BE", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sk-SK", "sl-SI", "sr-latn-RS", "sv-SE", "tr-TR", "zh-HK", "zh-TW"]
 BING_LOCALES = ["en-AU", "jp-JP"]
 BING_RESOLUTIONS = ["1366x768", "800x600", "1920x1080", "1024x768"]
 
+
 @click.command()
-@click.option('--country', type=click.Choice(BING_LOCALES, case_sensitive=True), default="en-AU", show_default=True, help="Localization")
-@click.option('--resolution', type=click.Choice(BING_RESOLUTIONS, case_sensitive=True), default="1920x1080", show_default=True)
-@click.option('--quote-file', type=click.Path(exists=True, readable=True, resolve_path=True), default=os.path.join(os.path.dirname(os.path.realpath(__file__)), "quotes.txt"), help="Can be any newline seperated plaintext file", show_default=True)
-
+@click.option(
+    "--country",
+    type=click.Choice(BING_LOCALES, case_sensitive=True),
+    default="en-AU",
+    show_default=True,
+    help="Localization",
+)
+@click.option(
+    "--resolution",
+    type=click.Choice(BING_RESOLUTIONS, case_sensitive=True),
+    default="1920x1080",
+    show_default=True,
+)
+@click.option(
+    "--quote-file",
+    type=click.Path(exists=True, readable=True, resolve_path=True),
+    default=os.path.join(os.path.dirname(os.path.realpath(__file__)), "quotes.txt"),
+    help="Can be any newline seperated plaintext file",
+    show_default=True,
+)
 def manipulate_wallpaper(country, resolution, quote_file):
-    ''' This script will choose a random line from the quote-file, append the user's calendar for the next two days, and the overlay it on that day's Bing wallpaper
-    '''
+    """ This script will choose a random line from the quote-file, append the user's calendar for the next two days, and the overlay it on that day's Bing wallpaper
+    """
 
-    #get image
+    # get image
     download_wallpaper_image.download_bing_wallpaper(country, resolution)
 
-    #get agenda
+    # get agenda
     agenda = get_calendar_events.main()
 
-    #get base image
+    # get base image
     base_image = Image.open("/tmp/bing.jpg").convert("RGBA")
 
-    #set font
+    # set font
     font = "/usr/share/fonts/gnu-fee/FreeMono.otf"
     font_size = 25
     quote_font = ImageFont.truetype(font, font_size)
@@ -50,7 +67,7 @@ def manipulate_wallpaper(country, resolution, quote_file):
         quote_pool = f.read().splitlines()
     random_quote = random.choice(quote_pool)
     quote_lines = textwrap.wrap(random_quote, width=55)
-    str1 = ''
+    str1 = ""
     for i in quote_lines:
         str1 = str1 + i + "\n"
     quote_lines = str1 + " \n" + agenda
@@ -103,6 +120,7 @@ def manipulate_wallpaper(country, resolution, quote_file):
     image_out = Image.alpha_composite(image_out, text_image)
 
     image_out.save("/tmp/wallpaper.png")
+
 
 if __name__ == "__main__":
     manipulate_wallpaper()
