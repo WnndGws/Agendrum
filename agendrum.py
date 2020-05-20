@@ -23,6 +23,7 @@ BING_RESOLUTIONS = ["1366x768", "800x600", "1920x1080", "1024x768"]
 @click.option('--country', type=click.Choice(BING_LOCALES, case_sensitive=True), default="en-AU", show_default=True, help="Localization")
 @click.option('--resolution', type=click.Choice(BING_RESOLUTIONS, case_sensitive=True), default="1920x1080", show_default=True)
 @click.option('--quote-file', type=click.Path(exists=True, readable=True, resolve_path=True), default=os.path.join(os.path.dirname(os.path.realpath(__file__)), "quotes.txt"), help="Can be any newline seperated plaintext file", show_default=True)
+
 def manipulate_wallpaper(country, resolution, quote_file):
     ''' This script will choose a random line from the quote-file, append the user's calendar for the next two days, and the overlay it on that day's Bing wallpaper
     '''
