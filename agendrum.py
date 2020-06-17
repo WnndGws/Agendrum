@@ -9,6 +9,7 @@ import textwrap
 
 # 3rd party imports
 import click
+# python-pillow
 from PIL import Image, ImageDraw, ImageFont, ImageStat
 
 # local imports
