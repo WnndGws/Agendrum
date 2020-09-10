@@ -4,9 +4,10 @@
 
 import datetime
 import os
-import httplib2
+import sys
 
 from apiclient import discovery
+import httplib2
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
@@ -23,16 +24,18 @@ if "XDG_CONFIG_HOME" in os.environ:
     CLIENT_SECRET_FILE = os.path.join(XDG_DIR, "agendrum_secrets.json")
     #Quit if file doesnt exist since Agendrum doesnt work without it
     if not os.path.isfile(CLIENT_SECRET_FILE):
-        print(f'Please create "{CLIENT_SECRET_FILE}" and run Agendrum again. (see https://stackoverflow.com/a/55416898 for help on how to do this)')
-        quit()
+        print(f'Please create "{CLIENT_SECRET_FILE}" and run Agendrum again.\
+              (see https://stackoverflow.com/a/55416898 for help on how to do this)')
+        sys.exit()
     CREDENTIAL_FILE = os.path.join(XDG_DIR, "agendrum_credentials.json")
 else:
     BASE_DIR = os.path.expanduser("~")
     CLIENT_SECRET_FILE = os.path.join(BASE_DIR, ".agendrum_secrets")
     #Quit if file doesnt exist since Agendrum doesnt work without it
     if not os.path.isfile(CLIENT_SECRET_FILE):
-        print(f'Please create "{CLIENT_SECRET_FILE}" and run Agendrum again. (see https://stackoverflow.com/a/55416898 for help on how to do this)')
-        quit()
+        print(f'Please create "{CLIENT_SECRET_FILE}" and run Agendrum again.\
+              (see https://stackoverflow.com/a/55416898 for help on how to do this)')
+        sys.exit()
     CREDENTIAL_FILE = os.path.join(BASE_DIR, ".agendrum_credentials")
 APPLICATION_NAME = "Agendrum"
 
@@ -68,130 +71,134 @@ def get_events():
     now = now + "T00:00:00Z"
     tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
     tomorrow = tomorrow + "T00:00:00Z"
-    tomorrowPlusOne = tomorrow[:-10] + "T23:59:00Z"
+    tomorrow_plus_one = tomorrow[:-10] + "T23:59:00Z"
 
-    allEvents = []
+    all_events = []
     page_token = None
     while True:
         calendar_list = service.calendarList().list(pageToken=page_token).execute()
         for calendar_list_entry in calendar_list['items']:
-            eventResult = (
+            event_result = (
                 service.events()
-               .list(
-                   calendarId=calendar_list_entry["id"],
-                   timeMin=now,
-                   timeMax=tomorrowPlusOne,
-                   singleEvents=True,
-                   orderBy="startTime",
-               )
-               .execute()
+                .list(
+                    calendarId=calendar_list_entry["id"],
+                    timeMin=now,
+                    timeMax=tomorrow_plus_one,
+                    singleEvents=True,
+                    orderBy="startTime",
+                )
+                .execute()
             )
-            events = eventResult.get("items", [])
+            events = event_result.get("items", [])
             if not events:
                 pass
             for event in events:
-                allEvents.append(event)
+                all_events.append(event)
         page_token = calendar_list.get('nextPageToken')
         if not page_token:
             break
 
-
-    return allEvents
+    return all_events
 
 def main():
     """Prints a pretty list of events
     """
 
-    allEvents = get_events()
+    all_events = get_events()
     today = datetime.date.today().strftime("%Y/%m/%d")
-    textListToday = []
-    textListTodayAllDay = []
-    textListTomorrow = []
-    textListTomorrowAllDay = []
-    textBox = ""
+    text_list_today = []
+    text_list_today_allday = []
+    text_list_tomorrow = []
+    text_list_tomorrow_allday = []
 
-    for event in allEvents:
+    for event in all_events:
         try:
             start = event["start"].get("dateTime")
             try:
-                start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%S+08:00")
-            except:
-                start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ") + datetime.timedelta(hours=8)
+                # Determine the timezone and then strip it from the string
+                # Need to subtract 08 from offset since I am GMT+8
+                # Will fail if no TZ since -5:-3 will be '0:'
+                offset = (int(start[-5:-3]) * -1) + 8
+                start = f'{start[:-6]}Z'
+            except ValueError:
+                offset = 8
+            start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ") + datetime.timedelta(hours=offset)
             date = datetime.datetime.strftime(start, "%H:%M")
             start = datetime.datetime.strftime(start, "%Y/%m/%d %H:%M")
             if start[:10] == today:
-                textListToday.append(f'{date} {event["summary"]}')
+                text_list_today.append(f'{date} {event["summary"]}')
             else:
-                textListTomorrow.append(f'{date} {event["summary"]}')
-        except:
+                text_list_tomorrow.append(f'{date} {event["summary"]}')
+        except TypeError:
             start = event["start"].get("date")
             start = datetime.datetime.strptime(start, "%Y-%m-%d")
             start = datetime.datetime.strftime(start, "%Y/%m/%d")
             end = event["end"].get("date")
             end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
             if start[:10] == today:
-                textListTodayAllDay.append(f'{event["summary"]}')
+                text_list_today_allday.append(f'{event["summary"]}')
             ## Google Calendar seems to only handle allday events in UTC, so need to filter out those that dont match
             elif end > (datetime.date.today() + datetime.timedelta(days=2)):
                 pass
             else:
-                textListTomorrowAllDay.append(f'{event["summary"]}')
+                text_list_tomorrow_allday.append(f'{event["summary"]}')
 
-    textListToday.sort()
-    textListTodayAllDay.sort()
-    textListTomorrow.sort()
-    textListTomorrowAllDay.sort()
+    text_list_today.sort()
+    text_list_today_allday.sort()
+    text_list_tomorrow.sort()
+    text_list_tomorrow_allday.sort()
 
-    if len(textListToday) != 0:
-        maxToday = len(max(textListToday, key=len))
+    if len(text_list_today) != 0:
+        max_today = len(max(text_list_today, key=len))
     else:
-        maxToday = 0
+        max_today = 0
 
-    if len(textListTodayAllDay) != 0:
-        maxTodayAllDay = len(max(textListTodayAllDay, key=len))
+    if len(text_list_today_allday) != 0:
+        max_today_allday = len(max(text_list_today_allday, key=len))
     else:
-        maxTodayAllDay = 0
+        max_today_allday = 0
 
-    if len(textListTomorrow) != 0:
-        maxTomorrow = len(max(textListTomorrow, key=len))
+    if len(text_list_tomorrow) != 0:
+        max_tomorrow = len(max(text_list_tomorrow, key=len))
     else:
-        maxTomorrow = 0
+        max_tomorrow = 0
 
-    if len(textListTomorrowAllDay) != 0:
-        maxTomorrowAllDay = len(max(textListTomorrowAllDay, key=len))
+    if len(text_list_tomorrow_allday) != 0:
+        max_tomorrow_allday = len(max(text_list_tomorrow_allday, key=len))
     else:
-        maxTomorrowAllDay = 0
+        max_tomorrow_allday = 0
 
-    maxLen = max(maxToday, maxTodayAllDay, maxTomorrow, maxTomorrowAllDay)
+    max_len = max(max_today, max_today_allday, max_tomorrow, max_tomorrow_allday)
 
-    printTextToday = [datetime.datetime.strftime(datetime.date.today(), "%A %d/%m/%Y")]
-    printTextTomorrow = [datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(days=1), "%A %d/%m/%Y")]
+    print_text_today = [datetime.datetime.strftime(datetime.date.today(), "%A %d/%m/%Y")]
+    print_text_tomorrow = [datetime.datetime.strftime(datetime.date.today()
+                                                      + datetime.timedelta(days=1), "%A %d/%m/%Y")]
 
-    for i in textListTodayAllDay:
-        if i not in printTextToday:
-                printTextToday.append(i)
-    for i in textListToday:
-        if i not in printTextToday:
-                printTextToday.append(i)
-    for i in textListTomorrowAllDay:
-        if i not in printTextTomorrow:
-                printTextTomorrow.append(i)
-    for i in textListTomorrow:
-        if i not in printTextTomorrow:
-                printTextTomorrow.append(i)
+    for i in text_list_today_allday:
+        if i not in print_text_today:
+            print_text_today.append(i)
+    for i in text_list_today:
+        if i not in print_text_today:
+            print_text_today.append(i)
+    for i in text_list_tomorrow_allday:
+        if i not in print_text_tomorrow:
+            print_text_tomorrow.append(i)
+    for i in text_list_tomorrow:
+        if i not in print_text_tomorrow:
+            print_text_tomorrow.append(i)
 
-    output = "" + printTextToday[0] + "\n"
-    for i in printTextToday[1:]:
-        i  = i + (maxLen - len(i))*"."
+    output = "" + print_text_today[0] + "\n"
+    for i in print_text_today[1:]:
+        i = i + (max_len - len(i))*"."
         output = output + i + "\n"
 
-    output = output + " \n" + printTextTomorrow[0] + "\n"
-    for i in printTextTomorrow[1:]:
-        i  = i + (maxLen - len(i))*"."
+    output = output + " \n" + print_text_tomorrow[0] + "\n"
+    for i in print_text_tomorrow[1:]:
+        i = i + (max_len - len(i))*"."
         output = output + i + "\n"
 
     return output
 
 if __name__ == "__main__":
-    output = main()
-    print(output)
+    out = main()
+    print(out)
