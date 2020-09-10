@@ -67,18 +67,17 @@ def get_events():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build("calendar", "v3", http=http)
 
-    now = datetime.date.today().isoformat()
-    now = now + "T00:00:00Z"
-    tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
-    tomorrow = tomorrow + "T00:00:00Z"
-    tomorrow_plus_one = tomorrow[:-10] + "T23:59:00Z"
+    now = f'{datetime.date.today().isoformat()}T00:00:00Z'
+    tomorrow = f'{(datetime.date.today() + datetime.timedelta(days=1)).isoformat()}T00:00:00Z'
+    tomorrow_plus_one = f'{tomorrow[:-10]}T23:59:00Z'
 
     all_events = []
     page_token = None
     while True:
         calendar_list = service.calendarList().list(pageToken=page_token).execute()
         for calendar_list_entry in calendar_list['items']:
-            event_result = (
+            #event_result = (
+            events = (
                 service.events()
                 .list(
                     calendarId=calendar_list_entry["id"],
@@ -88,20 +87,19 @@ def get_events():
                     orderBy="startTime",
                 )
                 .execute()
-            )
-            events = event_result.get("items", [])
-            if not events:
-                pass
-            for event in events:
-                all_events.append(event)
+            ).get("items", [])
+            #events = event_result.get("items", [])
+            if events:
+                for event in events:
+                    all_events.append(event)
         page_token = calendar_list.get('nextPageToken')
         if not page_token:
             break
 
     return all_events
 
-def main():
-    """Prints a pretty list of events
+def make_event_lists():
+    """ Takes my all events and sorts it into 4 lists
     """
 
     all_events = get_events()
@@ -122,7 +120,8 @@ def main():
                 start = f'{start[:-6]}Z'
             except ValueError:
                 offset = 8
-            start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ") + datetime.timedelta(hours=offset)
+            start = datetime.datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ")\
+                    + datetime.timedelta(hours=offset)
             date = datetime.datetime.strftime(start, "%H:%M")
             start = datetime.datetime.strftime(start, "%Y/%m/%d %H:%M")
             if start[:10] == today:
@@ -137,7 +136,8 @@ def main():
             end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
             if start[:10] == today:
                 text_list_today_allday.append(f'{event["summary"]}')
-            ## Google Calendar seems to only handle allday events in UTC, so need to filter out those that dont match
+            ## Google Calendar seems to only handle allday events in UTC
+            ## need to filter out those that dont match
             elif end > (datetime.date.today() + datetime.timedelta(days=2)):
                 pass
             else:
@@ -148,54 +148,35 @@ def main():
     text_list_tomorrow.sort()
     text_list_tomorrow_allday.sort()
 
-    if len(text_list_today) != 0:
-        max_today = len(max(text_list_today, key=len))
-    else:
-        max_today = 0
+    return [text_list_today, text_list_today_allday, text_list_tomorrow, text_list_tomorrow_allday]
 
-    if len(text_list_today_allday) != 0:
-        max_today_allday = len(max(text_list_today_allday, key=len))
-    else:
-        max_today_allday = 0
+def main():
+    """Prints a pretty list of events
+    """
 
-    if len(text_list_tomorrow) != 0:
-        max_tomorrow = len(max(text_list_tomorrow, key=len))
-    else:
-        max_tomorrow = 0
+    lists = make_event_lists()
+    today_text = datetime.datetime.strftime(datetime.date.today(), "%A %d/%m/%Y")
+    tomorrow_text = datetime.datetime.strftime(datetime.date.today()\
+                                               + datetime.timedelta(days=1), "%A %d/%m/%Y")
+    print_text_today = []
+    print_text_tomorrow = []
 
-    if len(text_list_tomorrow_allday) != 0:
-        max_tomorrow_allday = len(max(text_list_tomorrow_allday, key=len))
-    else:
-        max_tomorrow_allday = 0
+    # Test if there are items in the list
+    max_lengths = set()
+    for item in lists:
+        max_lengths.add(max(len(i) for i in item))
+    max_len = max(max_lengths)
 
-    max_len = max(max_today, max_today_allday, max_tomorrow, max_tomorrow_allday)
+    for item in lists[1] + lists[0]:
+        print_text_today.append(f'{item}{(max_len - len(item))*"."}')
+    for item in lists[3] + lists[2]:
+        print_text_tomorrow.append(f'{item}{(max_len - len(item))*"."}')
 
-    print_text_today = [datetime.datetime.strftime(datetime.date.today(), "%A %d/%m/%Y")]
-    print_text_tomorrow = [datetime.datetime.strftime(datetime.date.today()
-                                                      + datetime.timedelta(days=1), "%A %d/%m/%Y")]
-
-    for i in text_list_today_allday:
-        if i not in print_text_today:
-            print_text_today.append(i)
-    for i in text_list_today:
-        if i not in print_text_today:
-            print_text_today.append(i)
-    for i in text_list_tomorrow_allday:
-        if i not in print_text_tomorrow:
-            print_text_tomorrow.append(i)
-    for i in text_list_tomorrow:
-        if i not in print_text_tomorrow:
-            print_text_tomorrow.append(i)
-
-    output = "" + print_text_today[0] + "\n"
-    for i in print_text_today[1:]:
-        i = i + (max_len - len(i))*"."
-        output = output + i + "\n"
-
-    output = output + " \n" + print_text_tomorrow[0] + "\n"
-    for i in print_text_tomorrow[1:]:
-        i = i + (max_len - len(i))*"."
-        output = output + i + "\n"
+    newline = "\n"
+    output = f'{today_text}{newline}\
+        {newline.join(print_text_today)}\
+        {newline}{tomorrow_text}{newline}\
+        {newline.join(print_text_tomorrow)}'
 
     return output
 
