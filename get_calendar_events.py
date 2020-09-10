@@ -172,11 +172,9 @@ def main():
     for item in lists[3] + lists[2]:
         print_text_tomorrow.append(f'{item}{(max_len - len(item))*"."}')
 
-    newline = "\n"
-    output = f'{today_text}{newline}\
-        {newline.join(print_text_today)}\
-        {newline}{tomorrow_text}{newline}\
-        {newline.join(print_text_tomorrow)}'
+    print_text_today = "\n".join(print_text_today)
+    print_text_tomorrow = "\n".join(print_text_tomorrow)
+    output = f'{today_text}\n{print_text_today}\n\n{tomorrow_text}\n{print_text_tomorrow}'
 
     return output
 
