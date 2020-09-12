@@ -68,11 +68,10 @@ def manipulate_wallpaper(country, resolution, quote_file):
         quote_pool = f.read().splitlines()
     random_quote = random.choice(quote_pool)
     quote_lines = textwrap.wrap(random_quote, width=55)
-    str1 = ""
-    for i in quote_lines:
-        str1 = str1 + i + "\n"
-    quote_lines = str1 + " \n" + agenda
-    quote_lines = quote_lines.split("\n")
+    quote_lines.append("")
+    quote_lines = quote_lines + agenda.splitlines()
+    # Need to replace blank with single space so that it gets added to the image as a new line
+    quote_lines = [" " if x=="" else x for x in quote_lines]
 
     # get a drawing context
     draw = ImageDraw.Draw(text_image)
@@ -121,7 +120,6 @@ def manipulate_wallpaper(country, resolution, quote_file):
     image_out = Image.alpha_composite(image_out, text_image)
 
     image_out.save("/tmp/wallpaper.png")
-
 
 if __name__ == "__main__":
     manipulate_wallpaper()
