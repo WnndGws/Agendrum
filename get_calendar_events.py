@@ -91,6 +91,7 @@ def get_events():
             #events = event_result.get("items", [])
             if events:
                 for event in events:
+                    ## TODO: Only keep useful elements (ie. Start and summary)
                     all_events.append(event)
         page_token = calendar_list.get('nextPageToken')
         if not page_token:
