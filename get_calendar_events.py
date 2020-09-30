@@ -165,7 +165,8 @@ def main():
     # Test if there are items in the list
     max_lengths = set()
     for item in lists:
-        max_lengths.add(max(len(i) for i in item))
+        if not len(item) == 0:
+            max_lengths.add(max(len(i) for i in item))
     max_len = max(max_lengths)
 
     for item in lists[1] + lists[0]:
