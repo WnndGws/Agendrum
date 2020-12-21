@@ -2,6 +2,8 @@
 """Adds quote box to image
 """
 
+# AUR-packages: python-pillow python requests python-google-api-python-client python-oauth2client
+
 # standard imports
 import os
 import random
