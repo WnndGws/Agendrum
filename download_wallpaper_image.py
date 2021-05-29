@@ -19,7 +19,7 @@ def download_bing_wallpaper(country, resolution):
         image_url = f"https://www.bing.com/{image_url}_{resolution}.jpg"
         r = requests.get(image_url)
         if r.status_code == 200:
-            with open("/tmp/bing.jpg", "wb") as f:
+            with open(f'/tmp/bing_{resolution}.jpg', "wb") as f:
                 f.write(r.content)
 
 if __name__ == "__main__":

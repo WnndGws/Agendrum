@@ -55,7 +55,7 @@ def manipulate_wallpaper(country, resolution, quote_file):
     agenda = get_calendar_events.main()
 
     # get base image
-    base_image = Image.open("/tmp/bing.jpg").convert("RGBA")
+    base_image = Image.open(f'/tmp/bing_{resolution}.jpg').convert("RGBA")
 
     # set font
     font = "/usr/share/fonts/gnu-fee/FreeMono.otf"
@@ -121,7 +121,7 @@ def manipulate_wallpaper(country, resolution, quote_file):
     image_out = Image.alpha_composite(base_image, textbox_image)
     image_out = Image.alpha_composite(image_out, text_image)
 
-    image_out.save("/tmp/wallpaper.png")
+    image_out.save(f"/tmp/wallpaper_{resolution}.png")
 
 if __name__ == "__main__":
     manipulate_wallpaper()
